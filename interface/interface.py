@@ -1,10 +1,11 @@
 # interface.py
 
 from keyboard import is_pressed
+
 from logic.indexer import Indexer
 from logic.searching import Searcher
 from logic.singleton import singleton
-from font import Font
+from interface.font import Font
 
 
 @singleton

@@ -1,7 +1,7 @@
 # searching.py
 
-from indexer import Indexer
-from singleton import singleton
+from logic.indexer import Indexer
+from logic.singleton import singleton
 from interface.font import Font
 
 

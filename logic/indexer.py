@@ -5,7 +5,7 @@ from pathlib import Path
 from collections import defaultdict
 from math import log
 
-from singleton import singleton
+from logic.singleton import singleton
 
 
 @singleton
