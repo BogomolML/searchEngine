@@ -11,9 +11,9 @@ from logic.singleton import singleton
 @singleton
 class Indexer:
     def __init__(self):
-        with open('data/deletions.txt', 'r', encoding='utf-8') as file:
+        with open('logic/data/deletions.txt', 'r', encoding='utf-8') as file:
             deletions = file.readline().split()
-        with open('data/marks.txt', 'r', encoding='utf-8') as file:
+        with open('logic/data/marks.txt', 'r', encoding='utf-8') as file:
             marks = file.readline().split()
         self._inverted_index = defaultdict(dict)
         self._deletions = frozenset(deletions)
@@ -24,7 +24,9 @@ class Indexer:
     @staticmethod
     def _get_path_to_docs():
         path = Path(__file__).parent.parent
-        if 'documents' not in path.glob('*'):
+        namefiles = [f.name for f in path.iterdir() if f.is_file()]
+        if 'documents' in namefiles:
+            print(namefiles)
             raise PermissionError('No folder "documents"')
         else:
             return path / 'documents'

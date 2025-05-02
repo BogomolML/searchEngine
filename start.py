@@ -1,8 +1,9 @@
 # start.py
 
-from interface.interface import Interface
+from interface.console_output import ConsoleInterface
 
 
 if __name__ == '__main__':
-    inter = Interface()
+    inter = ConsoleInterface()
     inter.menu()
+2
