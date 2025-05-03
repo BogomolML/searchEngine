@@ -17,6 +17,7 @@ class ConsoleInterface:
 
     def menu(self):
         while True:
+            self._searcher.__init__()
             print('\nНажмите цифру на клавиатуре, чтобы выбрать')
             print(f'{Font.GREEN}[1]{Font.END} Обновить индекс')
             print(f'{Font.GREEN}[2]{Font.END} Поиск')

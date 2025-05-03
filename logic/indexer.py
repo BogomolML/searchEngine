@@ -24,9 +24,8 @@ class Indexer:
     @staticmethod
     def _get_path_to_docs():
         path = Path(__file__).parent.parent
-        namefiles = [f.name for f in path.iterdir() if f.is_file()]
-        if 'documents' in namefiles:
-            print(namefiles)
+        dirnames = [d.name for d in path.iterdir() if d.is_dir()]
+        if 'documents' not in dirnames:
             raise PermissionError('No folder "documents"')
         else:
             return path / 'documents'
@@ -56,19 +55,20 @@ class Indexer:
         return word_counts
 
     def build_index(self):
+        pattern = '\\documents\\'
         for file in self._path_to_docs.glob('*.txt'):
             words = self._tokenize(file)
             word_counts = self._count_words(words)
 
             for word, count in word_counts.items():
-                self._inverted_index[word][file] = count
-
-            self._doc_lengths[file] = len(words)
+                filename = str(file).split(pattern)[-1]
+                self._inverted_index[word][filename] = count
+                self._doc_lengths[filename] = len(words)
 
     def calc_tf_idf(self, word, doc):
         tf = self._inverted_index[word][doc] / self._doc_lengths[doc]
         idf = log(len(self._doc_lengths) / len(self._inverted_index[word]))
-        return tf * idf
+        return round(tf * idf, 4)
 
     @property
     def inverted_index(self):
