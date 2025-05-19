@@ -1,6 +1,6 @@
 # indexer.py
 
-from re import *
+from re import findall
 from pathlib import Path
 from collections import defaultdict
 from math import log

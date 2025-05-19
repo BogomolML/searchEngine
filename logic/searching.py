@@ -42,12 +42,13 @@ class Searcher:
             docs2 = set()
             for el in list(self._words_dict[words[0]].keys()):
                 docs1.add(el)
-            for el in list(self._words_dict[words[0]].keys()):
+            for el in list(self._words_dict[words[1]].keys()):
                 docs2.add(el)
             for doc1 in docs1:
                 for doc2 in docs2:
                     if doc1 == doc2:
                         docs.add(doc1)
+                        continue
         elif oper == 'ИЛИ' or oper == 'OR':
             for word in words:
                 doc = self._words_dict[word].keys()
@@ -61,15 +62,15 @@ class Searcher:
         result = f'Найдено {Font.GREEN}{len(docs)}{Font.END} документов:\n'
         for i in range(len(docs)):
             for k, v in self._presorted_docs.items():
-                if v == docs[i]:
-                    rel = k
+                if k == docs[i]:
+                    rel = v
                     result += f'{Font.GREEN}{i+1}{Font.END}. {docs[i]} (релевантность {rel})\n'
         return result
 
     def _sorting_by_relevance(self, words, docs, oper):
         sorted_docs: list = []
-        final_rel: float = 0
         for i in range(len(docs)):
+            final_rel: float = 0
             for j in range(len(words)):
                 try:
                     relevance = self._indexer.calc_tf_idf(words[j], docs[i])
@@ -82,9 +83,11 @@ class Searcher:
                 else:
                     final_rel = relevance
                 final_rel = round(final_rel, 4)
-                self._presorted_docs[final_rel] = docs[i]
-        sorted_rels: list = sorted(self._presorted_docs.keys(), reverse=True)
-        for key in sorted_rels:
-            sorted_docs.append(self._presorted_docs[key])
+                self._presorted_docs[docs[i]] = final_rel
+        sorted_rels: list = sorted(self._presorted_docs.values(), reverse=True)
+        keys = list(self._presorted_docs.keys())
+        values = list(self._presorted_docs.values())
+        for val in sorted_rels:
+            sorted_docs.append(keys[values.index(val)])
         print(sorted_docs)
         return sorted_docs
