@@ -11,21 +11,37 @@ from logic.singleton import singleton
 @singleton
 class Indexer:
     def __init__(self):
-        with open('logic/data/deletions.txt', 'r', encoding='utf-8') as file:
-            deletions = file.readline().split()
-        with open('logic/data/marks.txt', 'r', encoding='utf-8') as file:
-            marks = file.readline().split()
+        deletions, marks = self._read_init_files()
         self._inverted_index = defaultdict(dict)
         self._deletions = frozenset(deletions)
         self._punctuation_marks = frozenset(marks)
         self._path_to_docs = self._get_path_to_docs()
         self._doc_lengths: dict = {}
 
+    def build_index(self):
+        pattern = '\\documents\\'
+        for file in self._path_to_docs.glob('*.txt'):
+            words = self._tokenize(file)
+            word_counts = self._count_words(words)
+
+            for word, count in word_counts.items():
+                filename = str(file).split(pattern)[-1]
+                self._inverted_index[word][filename] = count
+                self._doc_lengths[filename] = len(words)
+
+    @staticmethod
+    def _read_init_files():
+        with open('logic/data/deletions.txt', 'r', encoding='utf-8') as file:
+            deletions = file.readline().split()
+        with open('logic/data/marks.txt', 'r', encoding='utf-8') as file:
+            marks = file.readline().split()
+        return deletions, marks
+
     @staticmethod
     def _get_path_to_docs():
         path = Path(__file__).parent.parent
-        dirnames = [d.name for d in path.iterdir() if d.is_dir()]
-        if 'documents' not in dirnames:
+        directors_names = [d.name for d in path.iterdir() if d.is_dir()]
+        if 'documents' not in directors_names:
             raise PermissionError('No folder "documents"')
         else:
             return path / 'documents'
@@ -38,10 +54,9 @@ class Indexer:
         return text
 
     def _tokenize(self, file_path):
-        pattern: str = r'\b\w+\b'
         sorted_words: list = []
         text = self._get_text_form_files(file_path)
-        words = findall(pattern, text)
+        words = findall(r'\b\w+\b', text)
         for word in words:
             if word not in self._deletions:
                 sorted_words.append(word)
@@ -53,17 +68,6 @@ class Indexer:
         for word in words:
             word_counts[word] += 1
         return word_counts
-
-    def build_index(self):
-        pattern = '\\documents\\'
-        for file in self._path_to_docs.glob('*.txt'):
-            words = self._tokenize(file)
-            word_counts = self._count_words(words)
-
-            for word, count in word_counts.items():
-                filename = str(file).split(pattern)[-1]
-                self._inverted_index[word][filename] = count
-                self._doc_lengths[filename] = len(words)
 
     def calc_tf_idf(self, word, doc):
         tf = self._inverted_index[word][doc] / self._doc_lengths[doc]
