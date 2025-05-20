@@ -13,7 +13,6 @@ class ConsoleInterface:
     def __init__(self):
         self._update_idx = Indexer()
         self._update_idx.build_index()
-        self._update_idx.build_index()
         self._searcher = Searcher()
 
     def interface_output(self):
@@ -26,8 +25,7 @@ class ConsoleInterface:
         while True:
             if is_pressed('1'):
                 print('pressed 1')
-                self._update_idx.__init__()
-                self._update_idx.build_index()
+                self._update_idx.rebuild_index()
                 break
             elif is_pressed('2'):
                 request = input('Введите запрос: ')
@@ -37,6 +35,11 @@ class ConsoleInterface:
                 break
             elif is_pressed('esc'):
                 exit()
+            elif is_pressed('5'):
+                r = input()
+                print(len(self._update_idx.inverted_index[r]))
+                print(self._update_idx.inverted_index[r])
+                break
 
     @staticmethod
     def _menu():

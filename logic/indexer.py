@@ -10,6 +10,8 @@ from logic.singleton import singleton
 
 @singleton
 class Indexer:
+    _PATTERN = '\\documents\\'
+
     def __init__(self):
         deletions, marks = self._read_init_files()
         self._inverted_index = defaultdict(dict)
@@ -19,15 +21,18 @@ class Indexer:
         self._doc_lengths: dict = {}
 
     def build_index(self):
-        pattern = '\\documents\\'
         for file in self._path_to_docs.glob('*.txt'):
             words = self._tokenize(file)
             word_counts = self._count_words(words)
 
             for word, count in word_counts.items():
-                filename = str(file).split(pattern)[-1]
+                filename = str(file).split(self._PATTERN)[-1]
                 self._inverted_index[word][filename] = count
                 self._doc_lengths[filename] = len(words)
+
+    def rebuild_index(self):
+        self.__init__()
+        self.build_index()
 
     @staticmethod
     def _read_init_files():
