@@ -1,3 +1,3 @@
-# Поисковая система
+# Search engine
 
-Консольное приложение для поиска документов, содержащих целевые слова(а так же их объединения или пересечения) в текстовых файлах формата .txt.
+Console application for searching documents containing target words (as well as their combinations or intersections) in .txt files.
